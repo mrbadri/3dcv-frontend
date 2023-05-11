@@ -1,4 +1,4 @@
-import { Box, Button, Fade, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Fade, Link, Slide, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import Web3 from "web3";
 import commaNumber from "comma-number";
@@ -7,6 +7,7 @@ import SearchIcon from "@mui/icons-material/Search";
 export default function Home() {
     const [address, setAddress] = useState("");
     const [balance, setBalance] = useState("");
+    const [error, setError] = useState("");
 
     const getURL = {
         infura: "https://mainnet.infura.io/v3/a9b1826d4e1441ae8c08d2fdebff62e0",
@@ -24,15 +25,12 @@ export default function Home() {
     return (
         <>
             <div className="center flex-col h-screen w-screen max-w-screen">
-                <Stack spacing={2} justifyContent="center" dir="ltr">
-                    <Box>
+                <Stack spacing={2} justifyContent="center" dir="ltr" sx={{}}>
+                    <Link href="https://etherscan.io/accounts">Account List</Link>
+                    <Stack sx={{ width: "90vw", mx: "auto" }} spacing={2}>
                         <TextField
                             label="Address"
-                            sx={{
-                                width: "300px",
-                                borderTopRightRadius: 0,
-                                borderBottomRightRadius: 0
-                            }}
+                            fullWidth
                             onChange={(e) => {
                                 setAddress(e.target.value);
                             }}
@@ -41,25 +39,44 @@ export default function Home() {
                             variant="contained"
                             size="large"
                             sx={{
-                                height: "55px",
-                                borderTopLeftRadius: 0,
-                                borderBottomLeftRadius: 0
+                                height: "55px"
                             }}
                             onClick={() => {
-                                web3.eth.getBalance(address).then((res) => {
-                                    setBalance(web3.utils.fromWei(res, "ether"));
-                                    console.log(web3.utils.fromWei(res, "ether"));
-                                });
+                                setError("");
+
+                                try {
+                                    web3.eth.getBalance(address).then((res) => {
+                                        setBalance(web3.utils.fromWei(res, "ether"));
+                                        console.log(web3.utils.fromWei(res, "ether"));
+                                    });
+                                } catch (error) {
+                                    console.log(error);
+                                    setBalance(0);
+                                    setError("Address is invalid!");
+                                }
                             }}
                         >
                             Get Balance
                         </Button>
-                    </Box>
+                    </Stack>
                     <Fade in={!!balance}>
-                        <Typography variant="h5" textAlign="left" color="primary">
-                            {commaNumber(balance)} <Typography component={'span'} color="primary" sx={{fontWeight: 700}} variant="h5">ETH</Typography>
-                        </Typography>
+                        <Slide direction="left" in={!!balance}>
+                            <Typography variant="h6" textAlign="left" color="primary">
+                                {commaNumber(Number.parseFloat(balance).toFixed(3))}{" "}
+                                <Typography
+                                    component={"span"}
+                                    color="primary"
+                                    sx={{ fontWeight: 700 }}
+                                    variant="h6"
+                                >
+                                    ETH
+                                </Typography>
+                            </Typography>
+                        </Slide>
                     </Fade>
+                    <Slide direction="bottom" in={!!error}>
+                        <Typography sx={{ color: "red", fontWeight: 600 }}>{error}</Typography>
+                    </Slide>
                 </Stack>
             </div>
         </>
