@@ -27,7 +27,7 @@ export default function Home() {
             <div className="center flex-col h-screen w-screen max-w-screen">
                 <Stack spacing={2} justifyContent="center" dir="ltr" sx={{}}>
                     <Link href="https://etherscan.io/accounts">Account List</Link>
-                    <Stack sx={{ width: "90vw", mx: "auto" }} spacing={2}>
+                    <Stack sx={{ width: { xs: "90vw", md: "400px" }, mx: "auto" }} spacing={2}>
                         <TextField
                             label="Address"
                             fullWidth
